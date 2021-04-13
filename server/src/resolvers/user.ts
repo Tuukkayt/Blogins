@@ -10,7 +10,6 @@ class CredentialInput{
     @Field()
     password: string
 }
-
 @ObjectType()
 class ErrorType{
     @Field()
@@ -19,8 +18,6 @@ class ErrorType{
     @Field()
     message: string;
 }
-
-
 @ObjectType()
 class UserResponse{
     @Field(() => [ErrorType], {nullable: true})
@@ -29,8 +26,6 @@ class UserResponse{
     @Field(() => User, {nullable: true})
     user?: User
 }
-
-
 @Resolver()
 export class UserResolver{
     @Mutation(() => UserResponse)
