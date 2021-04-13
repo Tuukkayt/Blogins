@@ -24,5 +24,5 @@ export class ArticleResolver {
             const article = em.create(Article, {title});
             await em.persistAndFlush(article);
             return article;
-        } 
+        }   
 }
