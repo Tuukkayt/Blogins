@@ -10,6 +10,6 @@ Technologies utilized so far:
 * PostgreSQL
 * MikroORM
   
-The main idea behind this project is to learn something new and challange me to create a bit more coplex program. 
+The main idea behind this project is to learn something new and challenge me to create a bit more complex program. 
 
 ### Stay tuned for more!
