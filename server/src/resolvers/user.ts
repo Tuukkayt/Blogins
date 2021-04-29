@@ -1,6 +1,6 @@
 import { User } from "../entities/User";
 import { MyContext } from "src/types";
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Resolver } from "type-graphql";
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import argon2 from 'argon2';
 
 @InputType()
@@ -26,12 +26,29 @@ class UserResponse{
     @Field(() => User, {nullable: true})
     user?: User
 }
+
+//Resolver for creating new user and for logging in
 @Resolver()
 export class UserResolver{
+    @Query(() => User, {nullable: true})
+    async me(
+        @Ctx() {req, em}: MyContext
+    ){  
+        //If a user is not logged in, return null
+        if(!req.session.userId){
+            return null;
+        }
+
+        const user = await em.findOne(User, {id: req.session.userId});
+        return user;
+    }
+
+    //Creates a new user
+    //Logging user in after sign up
     @Mutation(() => UserResponse)
     async register(
         @Arg('credentials') credentials: CredentialInput,
-        @Ctx() {em}: MyContext
+        @Ctx() {em, req}: MyContext
     ): Promise<UserResponse> {
         if(credentials.username.length === 0){
             return{
@@ -68,13 +85,18 @@ export class UserResolver{
                 }
             }
         }
+
+        //Creates session for the user
+        //Creates a cookie for the user
+        req.session.userId = user.id;
         return {user};
     }
 
+    //Logging user in
     @Mutation(() => UserResponse)
     async login(
         @Arg('credentials') credentials: CredentialInput,
-        @Ctx() {em}: MyContext
+        @Ctx() {em, req}: MyContext
     ): Promise<UserResponse> {
         const user = await em.findOne(User, {username: credentials.username});
         if(!user){
@@ -94,6 +116,11 @@ export class UserResolver{
                 }]
             }
         }
+
+        //Creates session for the user
+        //Creates a cookie for the user
+        req.session.userId = user.id;
+
         return {user};
     }
 }

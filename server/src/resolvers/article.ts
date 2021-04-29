@@ -2,6 +2,7 @@ import { Article } from "../entities/Article";
 import { MyContext } from "../types";
 import { Arg, Ctx, Int, Mutation, Query, Resolver } from "type-graphql";
 
+//Resolver for creating, finding and rendering articles
 @Resolver()
 export class ArticleResolver {
 
