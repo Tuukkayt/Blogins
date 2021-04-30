@@ -5,19 +5,39 @@ import { Input } from '@chakra-ui/input';
 import { Box } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/button';
 import { MenuBar } from '../components/menubar';
+import { gql, useMutation } from '@apollo/client';
 
 interface loginProps {
-
+    
 }
 
+const LOGIN_MUTATION = gql`
+    mutation Register($username: String!, $password: String!){
+        register(credentials: {username: $username, password: $password}){
+            errors{
+                type
+                message
+            }
+            user{
+                id
+                username
+            }
+        }
+    }
+`;
+
 const Login: React.FC<loginProps> = ({}) => {
+    const [register, {data}] = useMutation(LOGIN_MUTATION);
     return (
         <MenuBar>
         <Box mt={10} mx="auto" maxWidth="500px" w="100%">
             <Formik 
                 initialValues={{username: "", password: ""}}
                 onSubmit={(values) => {
-                    console.log(values);
+                    return register({variables: {
+                        username: values.username, 
+                        password: values.password
+                    }});
                 }}>
                 {({values, handleChange}) => (
                     <Form>

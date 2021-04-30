@@ -10,6 +10,7 @@ import session from 'express-session';
 import connectRedis from 'connect-redis';
 import { __prod__ } from './constants';
 import {MyContext} from './types';
+import cors from 'cors';
 
 
 const main = async () => {
@@ -21,22 +22,27 @@ const main = async () => {
     const RedisStore = connectRedis(session);
     const redisClient = redis.createClient()
 
+    app.use(cors({
+        origin: 'http://localhost:3000',
+        credentials: true
+    }))
+
     app.use(
-    session({
-        name: 'asd',
-        store: new RedisStore({ 
-            client: redisClient, 
-            disableTouch: true
-        }),
-        cookie: {
-            maxAge: 10*365*24*60*60*1000,
-            httpOnly: true,
-            sameSite: "lax",
-            secure: __prod__
-        },
-        saveUninitialized: false,
-        secret: 'fdgjhbdsfgjhsbdf',
-        resave: false,
+        session({
+            name: 'asd',
+            store: new RedisStore({ 
+                client: redisClient, 
+                disableTouch: true
+            }),
+            cookie: {
+                maxAge: 10*365*24*60*60*1000,
+                httpOnly: true,
+                sameSite: "lax",
+                secure: __prod__
+            },
+            saveUninitialized: false,
+            secret: 'fdgjhbdsfgjhsbdf',
+            resave: false,
     })
     )
 
@@ -48,7 +54,10 @@ const main = async () => {
         context: ({req, res}): MyContext => ({ em: orm.em, req, res})
     });
 
-    apolloServer.applyMiddleware({app});
+    apolloServer.applyMiddleware({
+        app, 
+        cors: false
+    });
 
     app.listen(4000, () => {
         console.log("Listening port localhost:4000")
